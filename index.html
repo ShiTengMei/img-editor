@@ -22,6 +22,8 @@
       --accent-hover: #2563eb;
       --accent-soft: rgba(59, 130, 246, 0.18);
       --danger: #ef4444;
+      --danger-soft: rgba(239, 68, 68, 0.14);
+      --danger-border: rgba(239, 68, 68, 0.34);
       --radius-sm: 10px;
       --radius-md: 14px;
       --radius-lg: 20px;
@@ -76,6 +78,17 @@
       display: none !important;
     }
 
+    /* 视觉隐藏文件输入框（不使用 display:none，以兼容各类安卓/iOS浏览器原生 label 触发） */
+    .visually-hidden-input {
+      position: fixed;
+      top: -9999px;
+      left: -9999px;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
     /* ========================
        2. 顶部极简导航栏
        ======================== */
@@ -113,6 +126,7 @@
       color: var(--text-primary);
       font-size: 13px;
       font-weight: 500;
+      cursor: pointer;
       transition: transform 0.12s ease, background-color 0.15s ease;
     }
 
@@ -156,7 +170,7 @@
       background: radial-gradient(circle at center, #141a26 0%, #0b0e14 75%);
     }
 
-    /* 未选图引导卡片 */
+    /* 未选图引导卡片（原生 label 直接关联 fileInput） */
     .upload-view {
       width: 100%;
       max-width: 360px;
@@ -173,6 +187,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      cursor: pointer;
       transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
     }
 
@@ -310,13 +325,13 @@
     }
 
     /* ========================
-       4. 极简底部控制面板（无 Tab、无对齐、无框宽框高滑块）
+       4. 极简底部控制面板（多文本框操作栏 + 基础极简控件）
        ======================== */
     .control-panel {
       flex-shrink: 0;
       background: var(--bg-surface);
       border-top: 1px solid var(--border-subtle);
-      padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+      padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
       z-index: 20;
     }
 
@@ -325,10 +340,87 @@
       margin: 0 auto;
       display: flex;
       flex-direction: column;
-      gap: 11px;
+      gap: 10px;
     }
 
-    /* 第 1 行：多行输入框 + 一键清空 */
+    /* 多文本框操作栏 */
+    .multi-box-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .btn-add-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      height: 34px;
+      padding: 0 13px;
+      border-radius: var(--radius-full);
+      background: var(--accent-soft);
+      border: 1px solid rgba(59, 130, 246, 0.42);
+      color: #93c5fd;
+      font-size: 12.5px;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: transform 0.12s ease, background-color 0.15s ease;
+    }
+
+    .btn-add-box:active {
+      transform: scale(0.95);
+      background: rgba(59, 130, 246, 0.28);
+    }
+
+    .box-status-label {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .btn-delete-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 34px;
+      padding: 0 12px;
+      border-radius: var(--radius-full);
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      color: #fca5a5;
+      font-size: 12.5px;
+      font-weight: 500;
+      flex-shrink: 0;
+      transition: transform 0.12s ease, background-color 0.15s ease, opacity 0.15s ease;
+    }
+
+    .btn-delete-box:active {
+      transform: scale(0.95);
+      background: rgba(239, 68, 68, 0.24);
+    }
+
+    /* 选中文本框属性控制组（未选中时柔和禁用） */
+    .box-controls-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: opacity 0.18s ease;
+    }
+
+    .box-controls-group.is-disabled {
+      opacity: 0.42;
+      pointer-events: none;
+    }
+
+    /* 第 1 行：多行输入框 + 一键清空（font-size: 16px 防止 iPhone Safari 聚焦放大） */
     .input-wrap {
       position: relative;
       display: flex;
@@ -339,13 +431,13 @@
       width: 100%;
       min-height: 44px;
       max-height: 92px;
-      padding: 10px 38px 10px 13px;
+      padding: 10px 76px 10px 13px;
       border-radius: var(--radius-md);
       background: var(--bg-elevated);
       border: 1px solid var(--border-subtle);
       color: var(--text-primary);
-      font-size: 15px;
-      line-height: 1.45;
+      font-size: 16px;
+      line-height: 1.4;
       outline: none;
       resize: none;
       transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -353,6 +445,7 @@
 
     .text-input::placeholder {
       color: var(--text-muted);
+      font-size: 14px;
     }
 
     .text-input:focus {
@@ -362,7 +455,7 @@
 
     .clear-input-btn {
       position: absolute;
-      right: 8px;
+      right: 43px;
       top: 50%;
       transform: translateY(-50%);
       width: 24px;
@@ -438,71 +531,57 @@
       transform: scale(1.14);
     }
 
-    /* 第 3 行：7 色块 + 自定义取色器 */
-    .color-row {
+    /* 输入框内颜色图标与向上弹出的六色面板 */
+    .input-color-btn {
+      position: absolute;
+      right: 7px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      overflow-x: auto;
-      padding: 3px 2px;
-      scrollbar-width: none;
+      justify-content: center;
+      color: #ffffff;
+      background: rgba(148, 163, 184, 0.13);
+      border: 1px solid var(--border-subtle);
+      z-index: 2;
     }
-
-    .color-row::-webkit-scrollbar {
-      display: none;
+    .input-color-btn[aria-expanded="true"] {
+      background: var(--accent-soft);
+      border-color: var(--accent);
     }
-
+    .input-color-btn svg { pointer-events: none; }
+    .color-row {
+      position: absolute;
+      right: 0;
+      bottom: calc(100% + 9px);
+      z-index: 30;
+      display: grid;
+      grid-template-columns: repeat(3, 38px);
+      gap: 9px;
+      padding: 12px;
+      border: 1px solid var(--border-strong);
+      border-radius: 15px;
+      background: #252e40;
+      box-shadow: 0 12px 32px rgba(0,0,0,.52);
+    }
+    .color-row.hidden { display: none !important; }
     .color-swatch {
-      width: 28px;
-      height: 28px;
-      border-radius: var(--radius-full);
-      border: 2px solid rgba(255, 255, 255, 0.18);
-      flex-shrink: 0;
-      transition: transform 0.14s ease, box-shadow 0.14s ease, border-color 0.14s ease;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.35);
+      transition: transform .12s, box-shadow .12s;
     }
-
-    .color-swatch:active {
-      transform: scale(0.9);
-    }
-
+    .color-swatch:active { transform: scale(.92); }
     .color-swatch.active {
       border-color: #ffffff;
-      box-shadow: 0 0 0 2.5px var(--accent);
-      transform: scale(1.08);
+      box-shadow: 0 0 0 2px var(--accent);
     }
 
-    .custom-color-wrap {
-      position: relative;
-      width: 28px;
-      height: 28px;
-      border-radius: var(--radius-full);
-      border: 2px solid rgba(255, 255, 255, 0.22);
-      background: conic-gradient(#ef4444, #f59e0b, #facc15, #22c55e, #3b82f6, #a855f7, #ef4444);
-      flex-shrink: 0;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.14s ease, box-shadow 0.14s ease;
-    }
-
-    .custom-color-wrap.active {
-      border-color: #ffffff;
-      box-shadow: 0 0 0 2.5px var(--accent);
-      transform: scale(1.08);
-    }
-
-    .custom-color-input {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0;
-      cursor: pointer;
-      padding: 0;
-      border: none;
-    }
-
-    /* 第 4 行：仅保留 描边 / 底色 / 加粗 三个独立开关胶囊 */
+    /* 第 4 行：描边 / 底色 / 加粗 三个独立开关胶囊 */
     .style-row {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -704,6 +783,7 @@
       left: 50%;
       transform: translateX(-50%) translateY(-6px);
       z-index: 60;
+      max-width: calc(100vw - 32px);
       padding: 9px 16px;
       border-radius: var(--radius-full);
       background: rgba(15, 23, 42, 0.94);
@@ -711,46 +791,252 @@
       color: #f8fafc;
       font-size: 12.5px;
       font-weight: 500;
+      text-align: center;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
       opacity: 0;
       transition: opacity 0.2s ease, transform 0.2s ease;
-      white-space: nowrap;
     }
 
     .toast.show {
       opacity: 1;
       transform: translateX(-50%) translateY(0);
     }
+
+    /* 五个操作按钮共处一行，适配窄屏手机 */
+    .multi-box-bar { gap: 5px; }
+    .multi-box-bar .btn-add-box { padding: 0 9px; height: 34px; font-size: 11px; gap: 3px; }
+    .multi-box-bar .btn-delete-box { padding: 0 9px; height: 34px; font-size: 11px; }
+    .multi-box-bar .style-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex: 0 0 auto;
+    }
+    .multi-box-bar .style-pill {
+      height: 34px;
+      min-width: 39px;
+      padding: 0 6px;
+      border-radius: 10px;
+      font-size: 11px;
+    }
+    .multi-box-bar .style-symbol { width: 19px; height: 19px; display: block; flex-shrink: 0; }
+    .multi-box-bar .style-pill { display: inline-flex; justify-content: center; align-items: center; }
+    .multi-box-bar .box-status-label { display: none; }
+    @media (min-width: 560px) {
+      .multi-box-bar .box-status-label { display: block; }
+      .multi-box-bar { gap: 8px; }
+      .multi-box-bar .style-row { gap: 7px; }
+      .multi-box-bar .style-pill { min-width: 46px; font-size: 12px; padding: 0 8px; }
+      .multi-box-bar .btn-add-box, .multi-box-bar .btn-delete-box { font-size: 12px; }
+    }
+    @media (max-width: 350px) {
+      .multi-box-bar { gap: 3px; }
+      .multi-box-bar .style-row { gap: 3px; }
+      .multi-box-bar .style-pill { min-width: 35px; padding: 0 4px; font-size: 10.5px; }
+      .multi-box-bar .btn-add-box, .multi-box-bar .btn-delete-box { padding: 0 6px; font-size: 10.5px; }
+    }
+
+    /* 屏幕左上角竖向字号滑块，避开底部键盘上方的输入框 */
+    .floating-size-control {
+      position: fixed;
+      left: max(6px, env(safe-area-inset-left));
+      top: calc(76px + env(safe-area-inset-top));
+      z-index: 32;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 7px;
+      width: 44px;
+      padding: 11px 4px;
+      border-radius: 24px;
+      background: rgba(20,25,35,.72);
+      border: 1px solid rgba(255,255,255,.14);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 16px rgba(0,0,0,.22);
+    }
+    .floating-size-control.is-disabled { display: none !important; }
+    .floating-size-value {
+      font-size: 12px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      color: #f8fafc;
+    }
+    .floating-size-track {
+      width: 30px;
+      height: 166px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .floating-size-track #sizeSlider {
+      position: absolute;
+      flex: none;
+      width: 166px;
+      height: 30px;
+      margin: 0;
+      transform: rotate(-90deg);
+      touch-action: none;
+    }
+    .floating-size-caption {
+      font-size: 10px;
+      color: #cbd5e1;
+      white-space: nowrap;
+    }
+    body.text-editing .floating-size-control {
+      /* 键盘出现后依然固定于屏幕左上角，不参与布局 */
+      z-index: 42;
+    }
+
+    /* 文本输入模式：锁定画布位置，控制栏浮在键盘上缘而非挤动画布 */
+    body.text-editing .workspace {
+      flex: 0 0 auto;
+      height: var(--editing-workspace-height);
+    }
+    body.text-editing .control-panel {
+      position: fixed;
+      top: var(--editing-panel-top, auto);
+      bottom: auto;
+      left: 8px;
+      right: 8px;
+      width: auto;
+      padding: 7px 9px;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 15px;
+      background: rgba(20,25,35,.84);
+      -webkit-backdrop-filter: blur(16px);
+      backdrop-filter: blur(16px);
+      box-shadow: 0 6px 22px rgba(0,0,0,.24);
+      z-index: 40;
+    }
+    body.text-editing .control-inner { gap: 0; }
+    body.text-editing .multi-box-bar,
+    body.text-editing .slider-row { display: none; }
+    body.text-editing .box-controls-group { gap: 0; }
+    body.text-editing .text-input {
+      min-height: 39px;
+      max-height: 80px;
+      padding: 8px 110px 8px 11px;
+      background: rgba(29,36,51,.78);
+    }
+    body.text-editing .input-color-btn { right: 49px; }
+    body.text-editing .clear-input-btn { right: 85px; }
+    .finish-edit-btn {
+      display: none;
+      position: absolute;
+      right: 5px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 31px;
+      padding: 0 9px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #fff;
+      background: #2563eb;
+      z-index: 3;
+    }
+    body.text-editing .finish-edit-btn { display: block; }
+
+
+    /* 三个样式按钮固定在顶部导航栏中央，替代“极简加字”标题 */
+    .app-header { position: relative; }
+    .header-style-toolbar {
+      position: absolute;
+      left: 50%;
+      top: calc(10px + env(safe-area-inset-top));
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      z-index: 22;
+      touch-action: manipulation;
+    }
+    .header-style-toolbar .style-pill {
+      width: 34px;
+      min-width: 34px;
+      height: 36px;
+      padding: 0;
+      border-radius: 10px;
+    }
+    .header-style-toolbar .style-symbol { width: 19px; height: 19px; display: block; }
+    @media (max-width: 370px) {
+      .header-style-toolbar { gap: 3px; }
+      .header-style-toolbar .style-pill { width: 30px; min-width: 30px; }
+      .app-header .btn-ghost { padding: 0 9px; }
+      .app-header .btn-primary { padding: 0 10px; }
+    }
+
+    /* 删除按钮跟随选中文本框右上角，独立于画布缩放及底部面板 */
+    .canvas-delete-box {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(210, 45, 58, .94);
+      border: 1.5px solid rgba(255,255,255,.85);
+      box-shadow: 0 2px 9px rgba(0,0,0,.5);
+      z-index: 18;
+      touch-action: manipulation;
+    }
+    .canvas-delete-box:active { transform: scale(.94); }
   </style>
 </head>
 <body>
 
   <!-- 顶部极简导航栏 -->
   <header class="app-header">
-    <button id="changeImageBtn" type="button" class="btn-ghost">
+    <!-- 使用原生 label 直接触发 fileInput，最大程度兼容安卓与 iPhone -->
+    <label for="fileInput" id="changeImageBtn" class="btn-ghost" role="button" tabindex="0">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
         <circle cx="8.5" cy="8.5" r="1.5"></circle>
         <polyline points="21 15 16 10 5 21"></polyline>
       </svg>
       <span>换图</span>
-    </button>
+    </label>
 
-    <span class="header-title">极简加字</span>
+        <!-- 顶栏中央：描边、底色、加粗 -->
+        <div id="canvasStyleToolbar" class="style-row header-style-toolbar" role="group" aria-label="文本框样式">
+          <button id="strokeToggle" type="button" class="style-pill" aria-label="描边" title="描边" aria-pressed="false">
+            <svg class="style-symbol" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+              <path d="M4.5 20 10.2 4h3.6L19.5 20M7.1 14h9.8" />
+            </svg>
+          </button>
+          <button id="bgToggle" type="button" class="style-pill" aria-label="底色" title="底色" aria-pressed="false">
+            <svg class="style-symbol" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round">
+              <rect x="2.5" y="3" width="19" height="18" rx="3" />
+              <path d="M3 15h18v3a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3z" fill="currentColor" opacity=".35" stroke="none"/>
+              <path d="m7 15 3.1-8h3.8l3.1 8M8.3 12h7.4" />
+            </svg>
+          </button>
+          <button id="boldToggle" type="button" class="style-pill" aria-label="加粗" title="加粗" aria-pressed="false">
+            <svg class="style-symbol" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor">
+              <path d="M6 3.5h7.1c4 0 6.3 2.1 6.3 5.1 0 1.8-.9 3.1-2.5 3.8 2.2.6 3.4 2.1 3.4 4.2 0 3.4-2.6 5.4-6.7 5.4H6zm4.2 3.4v4h2.5c1.6 0 2.4-.7 2.4-2 0-1.2-.9-2-2.4-2zm0 7.2v4.5h3c1.8 0 2.7-.8 2.7-2.3 0-1.4-.9-2.2-2.7-2.2z"/>
+            </svg>
+          </button>
+        </div>
 
     <button id="saveImageBtn" type="button" class="btn-primary" disabled>
       <span>保存图片</span>
     </button>
   </header>
 
-  <!-- 隐藏的图片文件选择器 -->
-  <input id="fileInput" type="file" accept="image/*" class="hidden" />
+  <!-- 视觉隐藏的文件选择器（不使用 display:none） -->
+  <input id="fileInput" type="file" accept="image/*" class="visually-hidden-input" />
 
   <!-- 中央工作区 -->
   <main class="workspace">
-    <!-- 未选图引导区 -->
+    <!-- 未选图引导区（原生 label 直接关联 fileInput） -->
     <div id="uploadView" class="upload-view">
-      <button id="uploadTrigger" type="button" class="upload-card">
+      <label for="fileInput" id="uploadTrigger" class="upload-card" role="button" tabindex="0">
         <div class="upload-icon-box">
           <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="3" ry="3"></rect>
@@ -761,9 +1047,9 @@
         <span class="upload-cta">选择手机里的图片</span>
         <p class="upload-sub">
           纯本地处理，不上传服务器<br />
-          支持双指缩放、手拖文本框大小与自动换行
+          双击图片添加文字 · 双指缩放与手拖大小
         </p>
-      </button>
+      </label>
     </div>
 
     <!-- 画布编辑区 -->
@@ -772,9 +1058,16 @@
         <canvas id="editorCanvas"></canvas>
       </div>
 
+      <!-- 当前选中文本框的右上角删除按钮，不占底部工具栏空间 -->
+      <button id="deleteBoxBtn" type="button" class="canvas-delete-box hidden" aria-label="删除当前文本框" title="删除当前文本框" disabled>
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+
       <!-- 顶部轻提示 -->
       <div id="canvasHint" class="canvas-hint">
-        拖动文字移动 · 拖动手柄调宽高 · 双指缩放图片
+        双击空白处加文字 · 点文字编辑 · 双指缩放
       </div>
 
       <!-- 放大时显示的一键复原胶囊 -->
@@ -786,41 +1079,46 @@
     </div>
   </main>
 
+  <!-- 左侧中部悬浮字号控件：不占用底部面板高度 -->
+  <div id="floatingSizeControl" class="floating-size-control hidden" aria-label="字号调整">
+    <span id="sizeValue" class="floating-size-value">42</span>
+    <div class="floating-size-track">
+      <input id="sizeSlider" type="range" min="16" max="100" value="42" aria-label="字号大小" />
+    </div>
+    <span class="floating-size-caption">字号</span>
+  </div>
+
   <!-- 极简底部控制面板（选图后显示） -->
   <footer id="controlPanel" class="control-panel hidden">
     <div class="control-inner">
 
-      <!-- 第 1 行：多行输入框 + 一键清空小按钮 -->
-      <div class="input-wrap">
-        <textarea
-          id="textInput"
-          class="text-input"
-          rows="1"
-          placeholder="输入文字（超出框宽自动换行，支持回车）..."
-        ></textarea>
-        <button id="clearTextBtn" type="button" class="clear-input-btn hidden" aria-label="清空文字" title="清空文字">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
+      <!-- 选中文本框的属性编辑区（未选中时柔和禁用） -->
+      <div id="boxControlsGroup" class="box-controls-group">
+        <!-- 第 1 行：多行输入框 + 一键清空小按钮 -->
+        <div class="input-wrap">
+          <textarea
+            id="textInput"
+            class="text-input"
+            rows="1"
+            placeholder="输入文字（超出框宽自动换行，支持回车）..."
+          ></textarea>
+          <button id="colorMenuBtn" type="button" class="input-color-btn" aria-label="选择字体颜色" title="选择字体颜色" aria-expanded="false" aria-controls="colorRow">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 19h14" stroke-width="2.7"></path>
+              <path d="m8 16 4-11 4 11M9.3 12.5h5.4"></path>
+            </svg>
+          </button>
+          <div id="colorRow" class="color-row hidden" role="group" aria-label="六种字体颜色"></div>
+          <button id="finishEditBtn" type="button" class="finish-edit-btn">完成</button>
+          <button id="clearTextBtn" type="button" class="clear-input-btn hidden" aria-label="清空文字" title="清空文字">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        </div>
 
-      <!-- 第 2 行：字号调节滑块 -->
-      <div class="slider-row">
-        <span class="row-label">字号</span>
-        <input id="sizeSlider" type="range" min="16" max="100" value="42" aria-label="字号大小" />
-        <span id="sizeValue" class="size-value">42</span>
-      </div>
 
-      <!-- 第 3 行：7 种高对比度常用色 + 自定义取色器 -->
-      <div id="colorRow" class="color-row"></div>
-
-      <!-- 第 4 行：描边 / 底色 / 加粗 三个独立开关 -->
-      <div class="style-row">
-        <button id="strokeToggle" type="button" class="style-pill">描边</button>
-        <button id="bgToggle" type="button" class="style-pill">底色</button>
-        <button id="boldToggle" type="button" class="style-pill">加粗</button>
       </div>
 
     </div>
@@ -871,7 +1169,7 @@
   <script>
     /**
      * 极简图片加字工具 - 核心逻辑（零外部依赖）
-     * 支持：双指缩放平移、手柄直调文本框宽高、中英文智能换行（左对齐）、高清离屏导出
+     * 支持：多文本框管理、双指缩放平移、手柄直调文本框宽高、中英文智能换行、原生高兼容上传与高清离屏导出
      */
     (function () {
       'use strict';
@@ -879,30 +1177,27 @@
       // ========================
       // 1. 常量配置
       // ========================
-      const MAX_CANVAS_SIDE = 2600; // 温和上限，保持高清同时避免 iOS Safari 内存崩溃
+      const MAX_CANVAS_SIDE = 2600; // 温和上限，保持高清同时避免移动端内存溢出
       const MIN_ZOOM = 1;
       const MAX_ZOOM = 5;
       const FONT_FAMILY = '-apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif';
 
-      // 7 种高对比度常用色
+      // 六种常用字体颜色
       const PRESET_COLORS = [
         { name: '白色', value: '#FFFFFF' },
         { name: '黑色', value: '#111827' },
         { name: '黄色', value: '#FACC15' },
         { name: '红色', value: '#EF4444' },
         { name: '蓝色', value: '#3B82F6' },
-        { name: '绿色', value: '#22C55E' },
-        { name: '橙色', value: '#F97316' }
+        { name: '绿色', value: '#22C55E' }
       ];
 
       // ========================
       // 2. DOM 元素引用
       // ========================
       const fileInput = document.getElementById('fileInput');
-      const changeImageBtn = document.getElementById('changeImageBtn');
       const saveImageBtn = document.getElementById('saveImageBtn');
       const uploadView = document.getElementById('uploadView');
-      const uploadTrigger = document.getElementById('uploadTrigger');
       const editorView = document.getElementById('editorView');
       const canvasViewport = document.getElementById('canvasViewport');
       const canvas = document.getElementById('editorCanvas');
@@ -912,11 +1207,20 @@
       const zoomPercent = document.getElementById('zoomPercent');
 
       const controlPanel = document.getElementById('controlPanel');
+      // 新建文本框通过双击图片空白处完成
+      
+      const deleteBoxBtn = document.getElementById('deleteBoxBtn');
+      const headerStyleToolbar = document.getElementById('canvasStyleToolbar');
+      const boxControlsGroup = document.getElementById('boxControlsGroup');
+
       const textInput = document.getElementById('textInput');
+      const finishEditBtn = document.getElementById('finishEditBtn');
       const clearTextBtn = document.getElementById('clearTextBtn');
+      const floatingSizeControl = document.getElementById('floatingSizeControl');
       const sizeSlider = document.getElementById('sizeSlider');
       const sizeValue = document.getElementById('sizeValue');
       const colorRow = document.getElementById('colorRow');
+      const colorMenuBtn = document.getElementById('colorMenuBtn');
       const strokeToggle = document.getElementById('strokeToggle');
       const bgToggle = document.getElementById('bgToggle');
       const boldToggle = document.getElementById('boldToggle');
@@ -930,7 +1234,7 @@
       const toastEl = document.getElementById('toast');
 
       // ========================
-      // 3. 应用状态
+      // 3. 应用状态（多文本框数据模型）
       // ========================
       const state = {
         image: null,
@@ -938,19 +1242,10 @@
         canvasWidth: 0,
         canvasHeight: 0,
 
-        // 单个直观的可调文本框（默认居中、宽 75%、高 25%，左对齐排版）
-        box: {
-          text: '在这里输入文字\n拖动手柄可调整文本框大小',
-          x: 0,       // 左上角 X（像素）
-          y: 0,       // 左上角 Y（像素）
-          w: 0,       // 宽度（像素）
-          h: 0,       // 高度（像素）
-          size: 42,   // 字号滑块值（16~100）
-          color: '#FFFFFF',
-          stroke: true,
-          bg: false,
-          bold: true
-        },
+        // 多文本框数组（按渲染顺序排列，数组末尾为最顶层）
+        boxes: [],
+        selectedId: null,
+        nextBoxId: 1,
 
         // 画布缩放与平移状态（仅影响预览）
         view: {
@@ -962,6 +1257,11 @@
         // 多点触控与拖拽交互状态
         activePointers: new Map(),
         interactionMode: 'none', // 'none' | 'drag-box' | 'resize-e' | 'resize-s' | 'resize-se' | 'pan-view' | 'pinch'
+        pointerDownClientX: 0,
+        pointerDownClientY: 0,
+        pointerMoved: false,
+        blankTapPending: false,
+
         startCanvasX: 0,
         startCanvasY: 0,
         startBoxX: 0,
@@ -990,6 +1290,51 @@
         exportFile: null
       };
 
+      // 在键盘弹出时只移动极简输入浮栏，保持画布的坐标、缩放和位置不变。
+      let textEditing = false;
+      let editingWorkspaceHeight = 0;
+      function positionEditingPanel() {
+        if (!textEditing) return;
+        const vv = window.visualViewport;
+        const visibleBottom = vv ? vv.offsetTop + vv.height : window.innerHeight;
+        const panelHeight = controlPanel.getBoundingClientRect().height;
+        const top = Math.max(4, visibleBottom - panelHeight - 6);
+        document.body.style.setProperty('--editing-panel-top', top + 'px');
+      }
+      function enterTextEditing() {
+        if (textEditing || !state.image) return;
+        // 记录现有工作区高度，再将控制面板从布局流中提出；图片不会因此重新居中。
+        editingWorkspaceHeight = document.querySelector('.workspace').getBoundingClientRect().height;
+        document.body.style.setProperty('--editing-workspace-height', editingWorkspaceHeight + 'px');
+        textEditing = true;
+        controlPanel.classList.remove('hidden');
+        document.body.classList.add('text-editing');
+        positionEditingPanel();
+        requestAnimationFrame(positionEditingPanel);
+      }
+      function exitTextEditing() {
+        if (!textEditing) return;
+        removeEmptyBoxes();
+        textEditing = false;
+        document.body.classList.remove('text-editing');
+        controlPanel.classList.add('hidden');
+        document.body.style.removeProperty('--editing-panel-top');
+        document.body.style.removeProperty('--editing-workspace-height');
+      }
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', positionEditingPanel);
+        window.visualViewport.addEventListener('scroll', positionEditingPanel);
+      }
+      function focusTextEditor() {
+        if (!getSelectedBox()) return;
+        enterTextEditing();
+        try { textInput.focus({preventScroll: true}); }
+        catch (_) { textInput.focus(); }
+        positionEditingPanel();
+      }
+      finishEditBtn.addEventListener('pointerdown', e => e.preventDefault());
+      finishEditBtn.addEventListener('click', () => textInput.blur());
+
       // ========================
       // 4. 通用工具函数
       // ========================
@@ -998,7 +1343,7 @@
       }
 
       /** 轻量 Toast 提示 */
-      function showToast(msg, duration = 2000) {
+      function showToast(msg, duration = 2200) {
         toastEl.textContent = msg;
         toastEl.classList.add('show');
         clearTimeout(state.toastTimer);
@@ -1062,7 +1407,142 @@
       }
 
       // ========================
-      // 5. 中英文智能自动换行算法
+      // 5. 多文本框管理辅助函数
+      // ========================
+      function getSelectedBox() {
+        if (state.selectedId === null) return null;
+        return state.boxes.find(b => b.id === state.selectedId) || null;
+      }
+
+      function getSelectedIndex() {
+        if (state.selectedId === null) return -1;
+        return state.boxes.findIndex(b => b.id === state.selectedId);
+      }
+
+      // 离开没有有效文字的文本框时自动丢弃；空格、换行也视为无效内容。
+      // 这里不主动 blur，避免拖动画布时关闭手机键盘。
+      function removeEmptyBoxes(exceptId = null) {
+        const before = state.boxes.length;
+        state.boxes = state.boxes.filter(b => b.id === exceptId || Boolean((b.text || '').trim()));
+        if (state.selectedId !== null && !state.boxes.some(b => b.id === state.selectedId)) {
+          state.selectedId = null;
+        }
+        if (state.boxes.length !== before) {
+          syncControls(true);
+          renderEditor();
+        }
+      }
+
+      /** 选中指定文本框，默认将其置顶（移至数组末尾） */
+      function selectBox(id, bringToFront = true) {
+        if (id === null || id === undefined) {
+          state.selectedId = null;
+          closeColorMenu();
+          return null;
+        }
+        const idx = state.boxes.findIndex(b => b.id === id);
+        if (idx === -1) {
+          state.selectedId = null;
+          return null;
+        }
+        if (bringToFront && idx !== state.boxes.length - 1) {
+          const [picked] = state.boxes.splice(idx, 1);
+          state.boxes.push(picked);
+        }
+        state.selectedId = id;
+        removeEmptyBoxes(id);
+        return getSelectedBox();
+      }
+
+      /** 创建初始居中文本框（宽 75% × 高 25%） */
+      function createInitialBox() {
+        const w = state.canvasWidth;
+        const h = state.canvasHeight;
+        const boxW = Math.round(w * 0.75);
+        const boxH = Math.round(h * 0.25);
+
+        return {
+          id: state.nextBoxId++,
+          text: '',
+          isPlaceholder: true, // 仅在编辑画布中显示“新建文框”，不导出
+          x: Math.round((w - boxW) / 2),
+          y: Math.round((h - boxH) / 2),
+          w: boxW,
+          h: boxH,
+          size: 42,
+          color: '#FFFFFF',
+          stroke: true,
+          bg: false,
+          bold: true
+        };
+      }
+
+      /** 添加一个新的独立文本框（宽 65% × 高 20%，向右下错开且自动限制在画布内） */
+      function addNewBox(atPoint = null) {
+        if (!state.image) return;
+
+        const w = state.canvasWidth;
+        const h = state.canvasHeight;
+        const boxW = Math.round(w * 0.65);
+        const boxH = Math.round(h * 0.20);
+        const maxX = Math.max(0, w - boxW);
+        const maxY = Math.max(0, h - boxH);
+
+        // 双击落点为新文本框中心，超出图片边缘时自动限制到图片内。
+        let nextX = atPoint ? clamp(Math.round(atPoint.x - boxW / 2), 0, maxX) : Math.round((w - boxW) / 2);
+        let nextY = atPoint ? clamp(Math.round(atPoint.y - boxH / 2), 0, maxY) : Math.round((h - boxH) / 2);
+
+        const newBox = {
+          id: state.nextBoxId++,
+          text: '',
+          isPlaceholder: true, // 仅在编辑画布中显示“新建文框”，不导出
+          x: nextX,
+          y: nextY,
+          w: boxW,
+          h: boxH,
+          size: 42,
+          color: '#FFFFFF',
+          stroke: true,
+          bg: false,
+          bold: true
+        };
+
+        removeEmptyBoxes();
+        state.boxes.push(newBox);
+        state.selectedId = newBox.id;
+
+        if (document.activeElement === textInput) {
+          textInput.blur();
+        }
+        syncControls(true);
+        renderEditor();
+        focusTextEditor();
+      }
+
+      /** 删除当前选中的文本框 */
+      function deleteSelectedBox() {
+        const idx = getSelectedIndex();
+        if (idx === -1) return;
+
+        state.boxes.splice(idx, 1);
+
+        // 删除后若还有其余文本框，自动选中最顶层的一个；全删空则 selectedId = null
+        if (state.boxes.length > 0) {
+          state.selectedId = state.boxes[state.boxes.length - 1].id;
+        } else {
+          state.selectedId = null;
+        }
+
+        if (document.activeElement === textInput) {
+          textInput.blur();
+        }
+        syncControls(true);
+        renderEditor();
+        showToast('已删除当前文本框', 1400);
+      }
+
+      // ========================
+      // 6. 中英文智能自动换行算法
       // ========================
       /**
        * 将多行文本按 maxWidth 智能折行：
@@ -1095,19 +1575,16 @@
             if (context.measureText(candidate).width <= safeWidth) {
               currentLine = candidate;
             } else {
-              // 如果当前行已有内容，先推入当前行
               if (currentLine.length > 0) {
                 resultLines.push(currentLine.replace(/\s+$/, ''));
                 currentLine = '';
               }
 
-              // 新行去掉前导多余空格
               const trimmedToken = token.replace(/^\s+/, '');
               if (trimmedToken.length === 0) {
                 continue;
               }
 
-              // 如果单个 token 本身不超过行宽，直接作为新行起点
               if (context.measureText(trimmedToken).width <= safeWidth) {
                 currentLine = trimmedToken;
               } else {
@@ -1135,20 +1612,19 @@
       }
 
       // ========================
-      // 6. 视图缩放与平移控制
+      // 7. 视图缩放与平移控制
       // ========================
       function clampPan(zoom, panX, panY) {
-        if (zoom <= 1.001) {
-          return { panX: 0, panY: 0 };
-        }
         const vpW = canvasViewport.clientWidth || 0;
         const vpH = canvasViewport.clientHeight || 0;
         const scaledW = (canvas.offsetWidth || 0) * zoom;
         const scaledH = (canvas.offsetHeight || 0) * zoom;
-
-        const maxPanX = Math.max(0, (scaledW - vpW) / 2);
-        const maxPanY = Math.max(0, (scaledH - vpH) / 2);
-
+        // 即使缩放是 100%，也允许单指把图片向四周移动；
+        // 键盘打开时可把下方内容抬到键盘上方，画布不重新排版。
+        const extraX = vpW * 0.68;
+        const extraY = vpH * 0.85;
+        const maxPanX = Math.max(0, (scaledW - vpW) / 2) + extraX;
+        const maxPanY = Math.max(0, (scaledH - vpH) / 2) + extraY;
         return {
           panX: clamp(panX, -maxPanX, maxPanX),
           panY: clamp(panY, -maxPanY, maxPanY)
@@ -1172,6 +1648,7 @@
         } else {
           zoomResetBtn.classList.add('hidden');
         }
+        positionDeleteButton();
       }
 
       function resetView(smooth = true) {
@@ -1209,16 +1686,18 @@
       }
 
       // ========================
-      // 7. 核心画布渲染（编辑态 & 离屏高清导出共用）
+      // 8. 核心画布渲染（多文本框 & 离屏高清导出共用）
       // ========================
-      function renderScene(targetCtx, width, height, forExport) {
-        if (!state.image) return;
+      function renderSingleBox(targetCtx, box, width, height, isSelected, forExport) {
+        const displayText = (!forExport && box.isPlaceholder) ? '新建文框' : box.text;
+        const hasText = Boolean(displayText && displayText.length > 0);
+        const hasNonEmptyText = Boolean(displayText && displayText.trim().length > 0);
 
-        targetCtx.clearRect(0, 0, width, height);
-        // 1. 绘制高清原图
-        targetCtx.drawImage(state.image, 0, 0, width, height);
+        // 导出模式下，若既无有效文字又无底色则跳过
+        if (forExport && !hasNonEmptyText && !box.bg) {
+          return;
+        }
 
-        const box = state.box;
         const fontSize = getPixelFontSize(box.size, width, height);
         const weight = box.bold ? '700' : '400';
         const lineHeight = fontSize * 1.32;
@@ -1232,19 +1711,18 @@
 
         targetCtx.save();
         targetCtx.font = `${weight} ${fontSize}px ${FONT_FAMILY}`;
-        targetCtx.textAlign = 'left'; // 默认清晰自然的左对齐排版
+        targetCtx.textAlign = 'left'; // 统一清晰左对齐排版
         targetCtx.textBaseline = 'top';
         targetCtx.lineJoin = 'round';
         targetCtx.miterLimit = 2;
 
-        const hasText = box.text && box.text.length > 0;
-        const lines = hasText ? wrapSmartText(targetCtx, box.text, innerW) : [];
+        const lines = hasText ? wrapSmartText(targetCtx, displayText, innerW) : [];
         const totalTextHeight = lines.length > 0
           ? (lines.length - 1) * lineHeight + fontSize * 1.08
           : 0;
         const isOverflow = totalTextHeight > innerH + 2;
 
-        // 2. 在文本框范围内严格裁剪并绘制底色与文字
+        // 1. 在文本框范围内严格裁剪并绘制圆角底色与文字
         if (hasText || box.bg) {
           targetCtx.save();
           buildRoundedRectPath(targetCtx, box.x, box.y, box.w, box.h, cornerRadius);
@@ -1265,7 +1743,7 @@
               const line = lines[i];
               const lineY = textStartY + i * lineHeight;
 
-              // 超出底部裁剪区域后无需继续绘制
+              // 超出底部裁剪区域后停止绘制
               if (lineY > box.y + box.h) break;
 
               if (box.stroke) {
@@ -1282,12 +1760,12 @@
           targetCtx.restore();
         }
 
-        // 3. 仅编辑态绘制虚线框、溢出提醒条与 3 个调节手柄（导出时完全隐藏）
-        if (!forExport) {
+        // 2. 仅当前选中的文本框在编辑态绘制双层虚线外框、溢出提醒条与 3 个调大小手柄
+        if (!forExport && isSelected) {
           const cssScale = getCssScale();
 
-          // 虚线外框（白色底线 + 蓝色虚线，深浅底图都清晰）
           targetCtx.save();
+          // 双层高对比度蓝色虚线外框
           targetCtx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
           targetCtx.lineWidth = 2.2 * cssScale;
           targetCtx.setLineDash([]);
@@ -1306,9 +1784,8 @@
             targetCtx.fillRect(box.x, box.y + box.h - barH / 2, box.w, barH);
           }
 
-          // 绘制 3 个大热区、易触摸的调节手柄：右中（调宽）、下中（调高）、右下角（同时调宽高）
-          const handleShadowColor = 'rgba(0, 0, 0, 0.45)';
-          targetCtx.shadowColor = handleShadowColor;
+          // 绘制 3 个大热区调节手柄：右中（调宽）、下中（调高）、右下角（同时调宽高）
+          targetCtx.shadowColor = 'rgba(0, 0, 0, 0.45)';
           targetCtx.shadowBlur = 6 * cssScale;
 
           // (A) 右中手柄（竖向白色胶囊）
@@ -1364,57 +1841,140 @@
         targetCtx.restore();
       }
 
+      function renderScene(targetCtx, width, height, forExport) {
+        if (!state.image) return;
+
+        targetCtx.clearRect(0, 0, width, height);
+        // 1. 绘制高清原图
+        targetCtx.drawImage(state.image, 0, 0, width, height);
+
+        // 2. 按 state.boxes 顺序从底层到顶层依次渲染所有文本框
+        for (let i = 0; i < state.boxes.length; i++) {
+          const box = state.boxes[i];
+          const isSelected = !forExport && box.id === state.selectedId;
+          renderSingleBox(targetCtx, box, width, height, isSelected, forExport);
+        }
+      }
+
+      function positionDeleteButton() {
+        const box = getSelectedBox();
+        if (!state.image || !box || editorView.classList.contains('hidden')) {
+          deleteBoxBtn.classList.add('hidden');
+          return;
+        }
+        const imageRect = canvas.getBoundingClientRect();
+        const editorRect = editorView.getBoundingClientRect();
+        if (!imageRect.width || !imageRect.height) return;
+        const right = imageRect.left + (box.x + box.w) / state.canvasWidth * imageRect.width;
+        const top = imageRect.top + box.y / state.canvasHeight * imageRect.height;
+        // 右上角略微偏外放置，避免盖住正文和文本框拖动手柄。
+        const left = clamp(right - editorRect.left - 11, 0, Math.max(0, editorRect.width - 32));
+        const y = clamp(top - editorRect.top - 21, 0, Math.max(0, editorRect.height - 32));
+        deleteBoxBtn.style.left = left + 'px';
+        deleteBoxBtn.style.top = y + 'px';
+        deleteBoxBtn.classList.remove('hidden');
+
+
+      }
+
       function renderEditor() {
         renderScene(ctx, state.canvasWidth, state.canvasHeight, false);
+        positionDeleteButton();
       }
 
       // ========================
-      // 8. 底部面板控件初始化与同步
+      // 9. 底部面板控件初始化与同步
       // ========================
+      function closeColorMenu() {
+        colorRow.classList.add('hidden');
+        colorMenuBtn.setAttribute('aria-expanded', 'false');
+      }
+
       function initColorSwatches() {
         colorRow.innerHTML = '';
-
         PRESET_COLORS.forEach(c => {
           const btn = document.createElement('button');
           btn.type = 'button';
           btn.className = 'color-swatch';
           btn.dataset.color = c.value;
           btn.title = c.name;
+          btn.setAttribute('aria-label', c.name);
           btn.style.backgroundColor = c.value;
           btn.addEventListener('click', () => {
-            state.box.color = c.value;
+            const box = getSelectedBox();
+            if (!box) return;
+            box.color = c.value;
+            closeColorMenu();
             syncControls();
             renderEditor();
           });
           colorRow.appendChild(btn);
         });
-
-        // 自定义取色器
-        const customWrap = document.createElement('label');
-        customWrap.id = 'customColorWrap';
-        customWrap.className = 'custom-color-wrap';
-        customWrap.title = '自定义颜色';
-
-        const picker = document.createElement('input');
-        picker.type = 'color';
-        picker.id = 'customColorPicker';
-        picker.className = 'custom-color-input';
-        picker.value = state.box.color;
-        picker.addEventListener('input', (e) => {
-          state.box.color = e.target.value;
-          syncControls();
-          renderEditor();
-        });
-
-        customWrap.appendChild(picker);
-        colorRow.appendChild(customWrap);
       }
 
-      function syncControls() {
-        const box = state.box;
+      // 颜色按钮及六色选项不能抢走文字输入焦点，否则安卓键盘会自动关闭。
+      // 在 pointerdown 阶段阻止按钮获取焦点，但不阻止后续 click 选择颜色。
+      function preserveKeyboardOnColorPointer(e) {
+        if (textEditing && document.activeElement === textInput) {
+          e.preventDefault();
+        }
+      }
+      colorMenuBtn.addEventListener('pointerdown', preserveKeyboardOnColorPointer);
+      colorRow.addEventListener('pointerdown', preserveKeyboardOnColorPointer);
+
+      colorMenuBtn.addEventListener('click', () => {
+        if (!getSelectedBox()) return;
+        const willOpen = colorRow.classList.contains('hidden');
+        colorRow.classList.toggle('hidden', !willOpen);
+        colorMenuBtn.setAttribute('aria-expanded', String(willOpen));
+      });
+      document.addEventListener('pointerdown', (e) => {
+        if (!e.target.closest('.input-wrap')) closeColorMenu();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeColorMenu();
+      });
+
+      function syncControls(forceInputUpdate = false) {
+        const box = getSelectedBox();
+        const selectedIdx = getSelectedIndex();
+        const hasSelection = Boolean(box);
+
+        // 多文本框操作栏状态与删除按钮
+        deleteBoxBtn.disabled = !hasSelection;
+        if (!hasSelection) deleteBoxBtn.classList.add('hidden');
+
+
+        // 柔和禁用态控制
+        boxControlsGroup.classList.toggle('is-disabled', !hasSelection);
+        textInput.disabled = !hasSelection;
+        sizeSlider.disabled = !hasSelection;
+        floatingSizeControl.classList.toggle('hidden', !hasSelection || !state.image);
+        strokeToggle.disabled = !hasSelection;
+        bgToggle.disabled = !hasSelection;
+        boldToggle.disabled = !hasSelection;
+
+        colorMenuBtn.disabled = !hasSelection;
+        if (!hasSelection) closeColorMenu();
+
+        if (!hasSelection) {
+          textInput.value = '';
+          textInput.placeholder = '双击图片空白位置添加文字';
+          autoResizeTextarea();
+          clearTextBtn.classList.add('hidden');
+
+          colorRow.querySelectorAll('.color-swatch').forEach(btn => btn.classList.remove('active'));
+
+          strokeToggle.classList.remove('active');
+          bgToggle.classList.remove('active');
+          boldToggle.classList.remove('active');
+          return;
+        }
+
+        textInput.placeholder = box.isPlaceholder ? '点击输入文字…' : '输入文字（超出框宽自动换行，支持回车）...';
 
         // 输入框与清空按钮
-        if (document.activeElement !== textInput) {
+        if (forceInputUpdate || document.activeElement !== textInput) {
           textInput.value = box.text;
           autoResizeTextarea();
         }
@@ -1425,101 +1985,147 @@
         sizeValue.textContent = box.size;
 
         // 颜色选中状态
-        let matchedPreset = false;
         const swatches = colorRow.querySelectorAll('.color-swatch');
         swatches.forEach(btn => {
           const isMatch = btn.dataset.color.toUpperCase() === box.color.toUpperCase();
           btn.classList.toggle('active', isMatch);
-          if (isMatch) matchedPreset = true;
         });
 
-        const customWrap = document.getElementById('customColorWrap');
-        const customPicker = document.getElementById('customColorPicker');
-        if (customWrap) customWrap.classList.toggle('active', !matchedPreset);
-        if (customPicker) customPicker.value = box.color;
+        colorMenuBtn.style.color = box.color;
 
         // 三个独立样式开关
         strokeToggle.classList.toggle('active', box.stroke);
         bgToggle.classList.toggle('active', box.bg);
         boldToggle.classList.toggle('active', box.bold);
+        strokeToggle.setAttribute('aria-pressed', String(box.stroke));
+        bgToggle.setAttribute('aria-pressed', String(box.bg));
+        boldToggle.setAttribute('aria-pressed', String(box.bold));
       }
 
       // ========================
-      // 9. 加载本地图片
+      // 10. 高兼容移动端图片加载（createObjectURL 优先，失败自动回退 FileReader）
       // ========================
+      function applyLoadedImage(img, objectUrlToKeep) {
+        try {
+          if (state.imageObjectUrl && state.imageObjectUrl !== objectUrlToKeep) {
+            URL.revokeObjectURL(state.imageObjectUrl);
+          }
+
+          let w = img.naturalWidth || img.width;
+          let h = img.naturalHeight || img.height;
+
+          if (!w || !h) {
+            showToast('图片尺寸异常，请更换其他图片');
+            return;
+          }
+
+          if (w > MAX_CANVAS_SIDE || h > MAX_CANVAS_SIDE) {
+            const ratio = Math.min(MAX_CANVAS_SIDE / w, MAX_CANVAS_SIDE / h);
+            w = Math.round(w * ratio);
+            h = Math.round(h * ratio);
+          }
+
+          state.image = img;
+          state.imageObjectUrl = objectUrlToKeep || null;
+          state.canvasWidth = w;
+          state.canvasHeight = h;
+
+          canvas.width = w;
+          canvas.height = h;
+
+          // 上传图片后默认居中创建 1 个宽 75% × 高 25% 的文本框并自动选中
+          state.boxes = [];
+          state.nextBoxId = 1;
+          state.selectedId = null;
+
+          exitTextEditing();
+          // 切换到编辑状态
+          uploadView.classList.add('hidden');
+          editorView.classList.remove('hidden');
+          controlPanel.classList.add('hidden');
+          saveImageBtn.disabled = false;
+
+          // 换图自动复位缩放与平移
+          resetView(false);
+          syncControls(true);
+          renderEditor();
+
+          // 显示并自动淡出操作轻提示
+          clearTimeout(state.hintTimer);
+          canvasHint.classList.remove('fade-out');
+          state.hintTimer = setTimeout(() => {
+            canvasHint.classList.add('fade-out');
+          }, 3600);
+        } catch (err) {
+          console.error(err);
+          showToast('图片初始化失败，请重试');
+        }
+      }
+
+      /** 回退方案：通过 FileReader.readAsDataURL 读取图片 */
+      function loadImageViaFileReader(file) {
+        try {
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            const dataUrl = ev.target && ev.target.result;
+            if (!dataUrl) {
+              showToast('读取图片内容失败，请重试');
+              return;
+            }
+            const fallbackImg = new Image();
+            fallbackImg.onload = function () {
+              applyLoadedImage(fallbackImg, null);
+            };
+            fallbackImg.onerror = function () {
+              showToast('图片格式暂不支持（如原始 HEIC）或文件已损坏');
+            };
+            fallbackImg.src = dataUrl;
+          };
+          reader.onerror = function () {
+            showToast('无法读取该文件，请检查手机相册权限后重试');
+          };
+          reader.readAsDataURL(file);
+        } catch (err) {
+          console.error(err);
+          showToast('浏览器无法读取该图片文件，请换一张试试');
+        }
+      }
+
       function handleImageFile(file) {
         if (!file) return;
-        if (!file.type.startsWith('image/')) {
-          showToast('请选择有效的图片文件');
+
+        // 部分安卓文件管理器返回的 file.type 可能为空字符串，仅当明确非图片类型时拦截
+        if (file.type && !file.type.startsWith('image/')) {
+          showToast('请选择有效的图片文件（JPG / PNG / WebP 等）');
           return;
         }
 
-        const objectUrl = URL.createObjectURL(file);
+        // 优先使用 URL.createObjectURL，异常或解码失败时自动回退 FileReader
+        let objectUrl = null;
+        try {
+          objectUrl = URL.createObjectURL(file);
+        } catch (err) {
+          console.warn('createObjectURL 不可用，自动回退 FileReader:', err);
+          loadImageViaFileReader(file);
+          return;
+        }
+
         const img = new Image();
-
         img.onload = function () {
-          try {
-            if (state.imageObjectUrl) {
-              URL.revokeObjectURL(state.imageObjectUrl);
-            }
-
-            let w = img.naturalWidth || img.width;
-            let h = img.naturalHeight || img.height;
-            if (w > MAX_CANVAS_SIDE || h > MAX_CANVAS_SIDE) {
-              const ratio = Math.min(MAX_CANVAS_SIDE / w, MAX_CANVAS_SIDE / h);
-              w = Math.round(w * ratio);
-              h = Math.round(h * ratio);
-            }
-
-            state.image = img;
-            state.imageObjectUrl = objectUrl;
-            state.canvasWidth = w;
-            state.canvasHeight = h;
-
-            canvas.width = w;
-            canvas.height = h;
-
-            // 默认居中生成宽 75% × 高 25% 的可调文本框
-            const defaultW = Math.round(w * 0.75);
-            const defaultH = Math.round(h * 0.25);
-            state.box.w = defaultW;
-            state.box.h = defaultH;
-            state.box.x = Math.round((w - defaultW) / 2);
-            state.box.y = Math.round((h - defaultH) / 2);
-
-            // 切换到编辑状态
-            uploadView.classList.add('hidden');
-            editorView.classList.remove('hidden');
-            controlPanel.classList.remove('hidden');
-            saveImageBtn.disabled = false;
-
-            // 换图自动复位缩放与平移
-            resetView(false);
-            syncControls();
-            renderEditor();
-
-            // 显示并自动淡出操作轻提示
-            clearTimeout(state.hintTimer);
-            canvasHint.classList.remove('fade-out');
-            state.hintTimer = setTimeout(() => {
-              canvasHint.classList.add('fade-out');
-            }, 3600);
-          } catch (err) {
-            console.error(err);
-            showToast('图片加载失败，请重试');
-          }
+          applyLoadedImage(img, objectUrl);
         };
-
         img.onerror = function () {
-          URL.revokeObjectURL(objectUrl);
-          showToast('无法读取该图片，请换一张试试');
+          if (objectUrl) {
+            URL.revokeObjectURL(objectUrl);
+          }
+          // 自动尝试 FileReader 回退解码
+          loadImageViaFileReader(file);
         };
-
         img.src = objectUrl;
       }
 
       // ========================
-      // 10. 画布手势：手柄调宽高、拖动文本框、双指缩放平移、滚轮缩放
+      // 11. 画布手势：手柄调宽高、多框点击切换与拖动、空白取消选中、双指缩放平移、滚轮缩放
       // ========================
       function beginPinchGesture() {
         const pts = Array.from(state.activePointers.values());
@@ -1536,40 +2142,46 @@
         state.pinchStartPanY = state.view.panY;
       }
 
-      /** 检测手指落点命中了哪个手柄或区域（大热区，易触摸） */
+      /**
+       * 命中检测优先级：
+       * (1) 当前选中框的 3 个调大小手柄（28px/26px * cssScale 大热区）
+       * (2) 倒序遍历 state.boxes（从顶层到底层）检测文本框区域
+       * (3) 空白处
+       */
       function hitTestCanvas(pt) {
-        const box = state.box;
         const cssScale = getCssScale();
         const cornerHitR = 28 * cssScale;
         const edgeHitR = 26 * cssScale;
+        const selected = getSelectedBox();
 
-        // 1. 优先命中右下角手柄（同时调宽高）
-        if (Math.hypot(pt.x - (box.x + box.w), pt.y - (box.y + box.h)) <= cornerHitR) {
-          return 'resize-se';
+        // 1. 优先命中当前选中文本框的 3 个手柄
+        if (selected) {
+          if (Math.hypot(pt.x - (selected.x + selected.w), pt.y - (selected.y + selected.h)) <= cornerHitR) {
+            return { type: 'resize-se', boxId: selected.id };
+          }
+          if (Math.hypot(pt.x - (selected.x + selected.w), pt.y - (selected.y + selected.h / 2)) <= edgeHitR) {
+            return { type: 'resize-e', boxId: selected.id };
+          }
+          if (Math.hypot(pt.x - (selected.x + selected.w / 2), pt.y - (selected.y + selected.h)) <= edgeHitR) {
+            return { type: 'resize-s', boxId: selected.id };
+          }
         }
 
-        // 2. 命中右中手柄（调宽）
-        if (Math.hypot(pt.x - (box.x + box.w), pt.y - (box.y + box.h / 2)) <= edgeHitR) {
-          return 'resize-e';
+        // 2. 倒序遍历所有文本框（最顶层优先命中）
+        for (let i = state.boxes.length - 1; i >= 0; i--) {
+          const box = state.boxes[i];
+          if (
+            pt.x >= box.x &&
+            pt.x <= box.x + box.w &&
+            pt.y >= box.y &&
+            pt.y <= box.y + box.h
+          ) {
+            return { type: 'drag-box', boxId: box.id };
+          }
         }
 
-        // 3. 命中下中手柄（调高）
-        if (Math.hypot(pt.x - (box.x + box.w / 2), pt.y - (box.y + box.h)) <= edgeHitR) {
-          return 'resize-s';
-        }
-
-        // 4. 命中文本框内部（拖动位置）
-        if (
-          pt.x >= box.x &&
-          pt.x <= box.x + box.w &&
-          pt.y >= box.y &&
-          pt.y <= box.y + box.h
-        ) {
-          return 'drag-box';
-        }
-
-        // 5. 空白处
-        return 'blank';
+        // 3. 空白处
+        return { type: 'blank', boxId: null };
       }
 
       canvasViewport.addEventListener('pointerdown', (e) => {
@@ -1585,36 +2197,53 @@
 
         // 第二根手指按下时立即切入双指缩放平移，绝不与单指冲突
         if (state.activePointers.size >= 2) {
+          state.blankTapPending = false;
           beginPinchGesture();
           return;
         }
 
+        state.pointerDownClientX = e.clientX;
+        state.pointerDownClientY = e.clientY;
+        state.pointerMoved = false;
+        state.blankTapPending = false;
+
         const pt = getCanvasPoint(e.clientX, e.clientY);
         const hit = hitTestCanvas(pt);
 
-        if (hit === 'resize-se' || hit === 'resize-e' || hit === 'resize-s' || hit === 'drag-box') {
-          state.interactionMode = hit;
+        if (hit.type === 'resize-se' || hit.type === 'resize-e' || hit.type === 'resize-s') {
+          const box = getSelectedBox();
+          if (!box) return;
+          state.interactionMode = hit.type;
           state.startCanvasX = pt.x;
           state.startCanvasY = pt.y;
-          state.startBoxX = state.box.x;
-          state.startBoxY = state.box.y;
-          state.startBoxW = state.box.w;
-          state.startBoxH = state.box.h;
+          state.startBoxX = box.x;
+          state.startBoxY = box.y;
+          state.startBoxW = box.w;
+          state.startBoxH = box.h;
 
-          if (document.activeElement === textInput) {
-            textInput.blur();
-          }
+        } else if (hit.type === 'drag-box') {
+          // 命中文本框：立即选中并置顶，同步底部面板
+          const box = selectBox(hit.boxId, true);
+          if (!box) return;
+
+          state.interactionMode = 'drag-box';
+          state.startCanvasX = pt.x;
+          state.startCanvasY = pt.y;
+          state.startBoxX = box.x;
+          state.startBoxY = box.y;
+          state.startBoxW = box.w;
+          state.startBoxH = box.h;
+
+          syncControls(true);
+          renderEditor();
         } else {
-          // 按在空白处：放大时允许单指平移画布
+          // 落点在空白处：单指可以随时平移图片（即使 100% 缩放、键盘已打开）
+          state.blankTapPending = true;
           state.panStartX = e.clientX;
           state.panStartY = e.clientY;
           state.initialPanX = state.view.panX;
           state.initialPanY = state.view.panY;
-          state.interactionMode = state.view.zoom > 1.001 ? 'pan-view' : 'none';
-
-          if (document.activeElement === textInput) {
-            textInput.blur();
-          }
+          state.interactionMode = 'pan-view';
         }
       });
 
@@ -1623,6 +2252,10 @@
         e.preventDefault();
 
         state.activePointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+        if (Math.hypot(e.clientX - state.pointerDownClientX, e.clientY - state.pointerDownClientY) >= 6) {
+          state.pointerMoved = true;
+        }
 
         // 双指缩放与平移
         if (state.interactionMode === 'pinch' && state.activePointers.size >= 2) {
@@ -1649,45 +2282,49 @@
           return;
         }
 
-        // 单指拖动文本框位置（1:1 跟随）
+        // 单指拖动当前选中文本框位置（1:1 跟随）
         if (state.interactionMode === 'drag-box') {
+          const box = getSelectedBox();
+          if (!box) return;
           const pt = getCanvasPoint(e.clientX, e.clientY);
           const dx = pt.x - state.startCanvasX;
           const dy = pt.y - state.startCanvasY;
-          const maxX = Math.max(0, state.canvasWidth - state.box.w);
-          const maxY = Math.max(0, state.canvasHeight - state.box.h);
-          state.box.x = clamp(state.startBoxX + dx, 0, maxX);
-          state.box.y = clamp(state.startBoxY + dy, 0, maxY);
+          const maxX = Math.max(0, state.canvasWidth - box.w);
+          const maxY = Math.max(0, state.canvasHeight - box.h);
+          box.x = clamp(state.startBoxX + dx, 0, maxX);
+          box.y = clamp(state.startBoxY + dy, 0, maxY);
           renderEditor();
           return;
         }
 
-        // 手柄调整文本框宽高
+        // 手柄调整当前选中文本框宽高
         if (
           state.interactionMode === 'resize-e' ||
           state.interactionMode === 'resize-s' ||
           state.interactionMode === 'resize-se'
         ) {
+          const box = getSelectedBox();
+          if (!box) return;
           const pt = getCanvasPoint(e.clientX, e.clientY);
           const dx = pt.x - state.startCanvasX;
           const dy = pt.y - state.startCanvasY;
-          const fontSize = getPixelFontSize(state.box.size, state.canvasWidth, state.canvasHeight);
+          const fontSize = getPixelFontSize(box.size, state.canvasWidth, state.canvasHeight);
           const minW = Math.max(state.canvasWidth * 0.14, fontSize * 2.2);
           const minH = Math.max(state.canvasHeight * 0.08, fontSize * 1.6);
 
           if (state.interactionMode === 'resize-e' || state.interactionMode === 'resize-se') {
-            const maxW = state.canvasWidth - state.box.x;
-            state.box.w = clamp(state.startBoxW + dx, minW, maxW);
+            const maxW = state.canvasWidth - box.x;
+            box.w = clamp(state.startBoxW + dx, minW, maxW);
           }
           if (state.interactionMode === 'resize-s' || state.interactionMode === 'resize-se') {
-            const maxH = state.canvasHeight - state.box.y;
-            state.box.h = clamp(state.startBoxH + dy, minH, maxH);
+            const maxH = state.canvasHeight - box.y;
+            box.h = clamp(state.startBoxH + dy, minH, maxH);
           }
           renderEditor();
           return;
         }
 
-        // 放大状态下，单指按空白处平移画布
+        // 单指拖动空白区域平移图片；保留文本输入焦点和手机键盘
         if (state.interactionMode === 'pan-view') {
           const dx = e.clientX - state.panStartX;
           const dy = e.clientY - state.panStartY;
@@ -1695,6 +2332,7 @@
         }
       });
 
+      let lastBlankTap = null;
       function handlePointerEnd(e) {
         if (!state.activePointers.has(e.pointerId)) return;
         state.activePointers.delete(e.pointerId);
@@ -1709,11 +2347,41 @@
           state.panStartY = remaining.y;
           state.initialPanX = state.view.panX;
           state.initialPanY = state.view.panY;
-          state.interactionMode = state.view.zoom > 1.001 ? 'pan-view' : 'none';
+          state.interactionMode = 'pan-view';
           return;
         }
 
         if (state.activePointers.size === 0) {
+          // 两次在图片空白处轻点（350ms 内、距离 32px 内）创建文本框。
+          // 单击空白处仅取消选中；在文本框上轻点仍可编辑，拖动不会触发新建。
+          if (state.blankTapPending && !state.pointerMoved && e.type === 'pointerup') {
+            const now = performance.now();
+            const inImage = (() => {
+              const r = canvas.getBoundingClientRect();
+              return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+            })();
+            if (inImage && lastBlankTap && now - lastBlankTap.time < 360 &&
+                Math.hypot(e.clientX - lastBlankTap.x, e.clientY - lastBlankTap.y) < 34) {
+              lastBlankTap = null;
+              const at = getCanvasPoint(e.clientX, e.clientY);
+              addNewBox(at);
+            } else {
+              lastBlankTap = inImage ? {time: now, x: e.clientX, y: e.clientY} : null;
+              if (state.selectedId !== null) {
+                state.selectedId = null;
+                removeEmptyBoxes();
+                syncControls(true);
+                renderEditor();
+              }
+            }
+          } else if (state.pointerMoved || state.interactionMode === 'pinch' || state.interactionMode === 'drag-box') {
+            lastBlankTap = null;
+          }
+          // 轻点文本框即打开输入键盘；拖动文本框不触发编辑。
+          if (state.interactionMode === 'drag-box' && !state.pointerMoved) {
+            focusTextEditor();
+          }
+          state.blankTapPending = false;
           state.interactionMode = 'none';
         }
       }
@@ -1747,30 +2415,65 @@
       });
 
       // ========================
-      // 11. 底部控件事件绑定
+      // 12. 文件选择与底部控件事件绑定
       // ========================
-      function triggerImagePicker() {
-        fileInput.value = '';
-        fileInput.click();
-      }
-
-      uploadTrigger.addEventListener('click', triggerImagePicker);
-      changeImageBtn.addEventListener('click', triggerImagePicker);
-
       fileInput.addEventListener('change', (e) => {
         const file = e.target.files && e.target.files[0];
-        handleImageFile(file);
+        if (file) {
+          handleImageFile(file);
+        }
+        // 加载启动后立即清空 value，允许用户重复选择同一张图片
+        fileInput.value = '';
+      });
+
+
+      // 点击样式图标时保留输入焦点，避免键盘不必要地收起。
+      headerStyleToolbar.addEventListener('pointerdown', e => {
+        e.stopPropagation();
+        if (document.activeElement === textInput) e.preventDefault();
+      });
+      deleteBoxBtn.addEventListener('pointerdown', e => e.stopPropagation());
+      deleteBoxBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteSelectedBox();
+      });
+
+      // 第一次点入新文框时，提示文字自动消失，直接开始输入。
+      textInput.addEventListener('focus', () => {
+        enterTextEditing();
+        const box = getSelectedBox();
+        if (!box || !box.isPlaceholder) return;
+        box.isPlaceholder = false;
+        textInput.value = '';
+        textInput.placeholder = '输入文字（超出框宽自动换行，支持回车）...';
+        clearTextBtn.classList.add('hidden');
+        renderEditor();
+      });
+
+      textInput.addEventListener('blur', () => {
+        // 某些手机在弹出颜色选择器等控件时会短暂失焦。
+        // 等待焦点确定离开输入区，再恢复完整面板。
+        setTimeout(() => {
+          if (document.activeElement !== textInput) exitTextEditing();
+        }, 80);
       });
 
       textInput.addEventListener('input', () => {
+        const box = getSelectedBox();
+        if (!box) return;
         autoResizeTextarea();
-        state.box.text = textInput.value;
-        clearTextBtn.classList.toggle('hidden', state.box.text.length === 0);
+        positionEditingPanel();
+        box.isPlaceholder = false;
+        box.text = textInput.value;
+        clearTextBtn.classList.toggle('hidden', box.text.length === 0);
         renderEditor();
       });
 
       clearTextBtn.addEventListener('click', () => {
-        state.box.text = '';
+        const box = getSelectedBox();
+        if (!box) return;
+        box.text = '';
+        box.isPlaceholder = false;
         textInput.value = '';
         autoResizeTextarea();
         clearTextBtn.classList.add('hidden');
@@ -1779,31 +2482,40 @@
       });
 
       sizeSlider.addEventListener('input', (e) => {
+        const box = getSelectedBox();
+        if (!box) return;
         const val = parseInt(e.target.value, 10);
-        state.box.size = val;
+        box.size = val;
         sizeValue.textContent = val;
         renderEditor();
       });
 
       strokeToggle.addEventListener('click', () => {
-        state.box.stroke = !state.box.stroke;
+        const box = getSelectedBox();
+        if (!box) return;
+        box.stroke = !box.stroke;
         syncControls();
         renderEditor();
       });
 
       bgToggle.addEventListener('click', () => {
-        state.box.bg = !state.box.bg;
+        const box = getSelectedBox();
+        if (!box) return;
+        box.bg = !box.bg;
         syncControls();
         renderEditor();
       });
 
       boldToggle.addEventListener('click', () => {
-        state.box.bold = !state.box.bold;
+        const box = getSelectedBox();
+        if (!box) return;
+        box.bold = !box.bold;
         syncControls();
         renderEditor();
       });
 
       window.addEventListener('resize', () => {
+        positionEditingPanel();
         if (state.image) {
           setViewTransform(state.view.zoom, state.view.panX, state.view.panY, false);
           renderEditor();
@@ -1811,7 +2523,7 @@
       });
 
       // ========================
-      // 12. 离屏高清纯净导出与手机相册保存弹窗
+      // 13. 离屏高清纯净导出与手机相册保存弹窗
       // ========================
       function cleanupExport() {
         if (state.exportUrl) {
@@ -1825,7 +2537,7 @@
         if (!state.image) return;
 
         try {
-          // 使用离屏 Canvas 按原图分辨率纯净绘制（自动隐藏虚线框、手柄和溢出提醒条）
+          // 使用离屏 Canvas 按原图分辨率纯净绘制所有文本框（自动隐藏虚线框、手柄和溢出提醒条）
           const offCanvas = document.createElement('canvas');
           offCanvas.width = state.canvasWidth;
           offCanvas.height = state.canvasHeight;
@@ -1906,7 +2618,7 @@
 
       // 初始化
       initColorSwatches();
-      syncControls();
+      syncControls(true);
     })();
   </script>
 </body>
